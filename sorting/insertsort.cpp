@@ -13,12 +13,13 @@ void insertSort(vector<int> &v, int n)
 	{
 		vtemp = v[i];
 		k = i-1;
-		while(k >= 0 && v[k] > vtemp)
+		while(k >= 0 && v[k] > vtemp)  
 		{
-			v[k+1] = v[k];
-			k=k-1;
+			// inspeciona os elementos da esquerda de v[i]
+			v[k+1] = v[k]; // passa o elemento maior +1 posicao para a direita
+			k--; // decrementa k para inspecionar o elemento anterior
 		}
-		v[k+1] = vtemp;
+		v[k+1] = vtemp; // se v[k] <= vtemp - v: v[k], v[k+1] (vtemp), elementos maiores que vtemp, ..., v[n-1]
 	}
 }
 

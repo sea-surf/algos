@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void heapify(vector<int> &v, int heap_size, int i)
+void heapify(vector<int> &v, int heap_size, int i)    // Altura da arvore: O(log 2 heap_size)
 {
 	int left = 2*i + 1;
 	int right = 2*i + 2;
@@ -20,7 +20,7 @@ void heapify(vector<int> &v, int heap_size, int i)
 	}
 }
 
-void buildheap(vector<int> &v)
+void buildheap(vector<int> &v)  // O(n)
 {
 	for (int i = v.size()/2; i >= 0; i--)
 	{
@@ -30,11 +30,11 @@ void buildheap(vector<int> &v)
 
 void heapsort(vector<int> &v)
 {
-	buildheap(v);
+	buildheap(v);                  // build heap on half of the tree (parents), the other half are only leaves, they dont guarantee the heap property
 	int heap_size = v.size();
-	for (int i = v.size() - 1; i > 0; i--)
+	for (int i = v.size() - 1; i > 0; i--)  // O(n)
 	{
-		swap(v[i], v[0]);        
+		swap(v[i], v[0]);           // isolates the largest element v[i]
 		heap_size = heap_size - 1; 
 		heapify(v, heap_size, 0);           
 	}
