@@ -3,151 +3,132 @@
 #include <string>
 #include <cmath>
 #include <utility>
+#include <stdexcept>
 
 using namespace std;
 
-// Linked List 
-template <typename Data>
-struct List
-{
-	struct Node
-	{
-		Data key; // data / key inside the node (int = 1, string="Soren")
-		Node *next;
-		Node *prev;
-		
-		Node(Data k) : key(k), next(nullptr), prev(nullptr) {}
-	};
-
-	// First node element
-	// (*head).key: data
-	// head->next, head->prev: pointers
-	Node *head; 
-	List() : head(nullptr) {} 
-
-	// Insert: Starts the Linked List
-	void list_insert(Node* x)
-	{
-		x->next = head;
-		if (head != nullptr)
-		{
-			head->prev = x;
-		}
-		head = x;
-		x->prev = nullptr;
-	}
-
-	// Search
-	Node* list_search(Data k) 
-	{
-		Node *x = head;
-		while (x != nullptr && x->key != k)
-		{
-			x = x->next;
-		}
-		return x;
-	}
-
-	// Delete
-	void list_delete(Node* x)
-	{
-		if (x->prev != nullptr)
-		{
-			x->prev->next = x->next;
-		} 
-		else
-		{
-			head = x->next;
-		}
-		
-		if (x->next != nullptr)
-		{
-			x->next->prev = x->prev;
-		}
-	}
-
-	// Size
-	int list_size()
-	{
-		int count = 0;
-		Node* x = head;
-		
-		while (x != nullptr)
-		{
-			count++;
-			x = x->next;
-		}
-		return count;
-	}
+template<typename T>
+struct Node {
+    T key; // data / key inside the node (int = 1, string="Soren")
+    Node<T>* next;
+    Node<T>* prev;
+    
+    Node(T k) : key(k), next(nullptr), prev(nullptr) {}
 };
-// --------------------------------------------
+
+// Linked List 
+template <typename T>
+class List {
+private:
+    Node<T>* _head;
+    size_t _size;
+
+public:
+    List() : _head(nullptr), _size(0) {} 
+
+    ~List() {
+        Node<T>* h = _head;
+        while(h != nullptr) {
+            Node<T>* next = h->next;
+            delete h;
+            h = next;
+        }
+    }
+
+    // Insert: Starts the Linked List
+    void list_insert(T k) {
+        Node<T>* x = new Node<T>(k);
+        x->next = _head;
+        if (_head != nullptr) {
+            _head->prev = x;
+        }
+        _head = x;
+        _size++;
+    }
+
+    // Search
+    Node<T>* list_search(T k) const {
+        Node<T>* x = _head;
+        while (x != nullptr && x->key != k) {
+            x = x->next;
+        }
+        return x;
+    }
+
+    // Delete
+    void list_delete(T k) {
+        Node<T>* x = list_search(k);
+        if (x != nullptr) {
+            if (x->prev != nullptr) {
+                x->prev->next = x->next;
+            } else {
+                _head = x->next;
+            }
+            
+            if (x->next != nullptr) {
+                x->next->prev = x->prev;
+            }
+            delete x;
+            _size--;
+        }
+    }
+
+    // Size
+    size_t list_size() const {
+        return _size;
+    }
+
+    // Print
+    void print() const {
+        Node<T>* x = _head;
+        while (x != nullptr) {
+            cout << x->key << " ";
+            x = x->next;
+        }
+        cout << endl;
+    }
+};
+
+// ------------------------------------------------
 
 int main()
 {
 	List<int> l;
 
-	List<int>::Node* n1 = new List<int>::Node(65);
-	List<int>::Node* n2 = new List<int>::Node(32);
-	List<int>::Node* n3 = new List<int>::Node(70);
-
-	l.list_insert(n1);
-	l.list_insert(n2);
-	l.list_insert(n3);
+	l.list_insert(65);
+	l.list_insert(32);
+	l.list_insert(70);
 
     cout << "List 1 size: " << l.list_size() << endl;
 
     cout << "List 1: ";
-    List<int>::Node* x = l.head;
-    while (x != nullptr) 
-    {
-        cout << x->key << " ";
-        x = x->next;
-    }
-    cout << endl;
+    l.print();
     
-    List<int>::Node* node_delete = l.list_search(32);
+    Node<int>* node_delete = l.list_search(32);
     if (node_delete != nullptr)
     {
 		cout << "Deleted element with data-key: " << node_delete->key << endl;
-        l.list_delete(node_delete);
-        delete node_delete;
-    } else{
-		cout << "Node not found inside the linked list." << endl;
+        l.list_delete(32);
+    } else {
+		cout << "Node not found." << endl;
 	}
     
     cout << "List 1: ";
-    x = l.head;
-    while (x != nullptr) 
-    {
-        cout << x->key << " ";
-        x = x->next;
-    }
-    cout << endl;
+    l.print();
 
 	// ------------------------
 
 	List<string> l2;
 
-	List<string>::Node* n4 = new List<string>::Node("Soren Kierkegaard");
-	List<string>::Node* n5 = new List<string>::Node("Aldous Huxley");
-	List<string>::Node* n6 = new List<string>::Node("Leo Tolstoy");
-	List<string>::Node* n7 = new List<string>::Node("Dostoyevsky");
-
-	l2.list_insert(n4);
-	l2.list_insert(n5);
-	l2.list_insert(n6);
-	l2.list_insert(n7);
+	l2.list_insert("Soren Kierkegaard");
+	l2.list_insert("Aldous Huxley");
+	l2.list_insert("Leo Tolstoy");
+	l2.list_insert("Dostoyevsky");
 
 	cout << "List 2 size: " << l2.list_size() << endl;
 
     cout << "List 2: ";
-    List<string>::Node* x_2 = l2.head;
-    while (x_2 != nullptr) 
-    {
-        cout <<  x_2->key << " ";
-        x_2 = x_2->next;
-    }
-    cout << endl;
+    l2.print();
 
 
 	return 0;
@@ -162,19 +143,19 @@ int main()
 
 	* List Insert - O(1)
 	  - Insert a new node to the front of the list, making it the new head.
-	  - L.head->next is never modified to not break the link
+	  - _head->next is never modified to not break the link
 	    1. x->next points to the old head.
-	    2. If the list is not empty (L.head != nullptr), the old head->prev points to x.
-	    3. The L.head is updated to point to x.
+	    2. If the list is not empty (_head != nullptr), the old head->prev points to x.
+	    3. The _head is updated to point to x.
 	    4. x->prev points to nullptr (since it is now the first element).
 	  
-	    list_insert(l2, n6); // Inserts "Lovecraft"
-	    List state becomes: [Head] -> "Lovecraft" -> "Aldous Huxley" -> "Soren"
+	    l2.list_insert("Lovecraft"); // Inserts "Lovecraft"
+	    List state becomes: [Head] -> "Lovecraft" -> "Dostoyevsky" -> "Leo Tolstoy" -> "Aldous Huxley" -> "Soren Kierkegaard"
 
-	* List Delete - O(1)
+	* List Delete - O(1) assuming node is already known, but O(n) to find it by key
 	  - Bypasses node 'x' by linking its previous and next nodes together.
 	  - Time complexity is O(1) assuming the pointer to node 'x' is already known.
-	  - Note: If list_search must be called first to find 'x', the total time is O(n).
+	  - Note: Since list_search is called first to find 'x' by key, the total time is O(n).
 
 	Node
 	
